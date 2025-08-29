@@ -39,7 +39,10 @@ export class AuthService {
     };
   }
 
-  async register(registerUserDto: RegisterUserDto): Promise<User> {
+  async register(registerUserDto: RegisterUserDto, referralCode?: string): Promise<User> {
+    if (referralCode) {
+      return this.usersService.createWithReferral(registerUserDto, referralCode);
+    }
     return this.usersService.create(registerUserDto);
   }
 

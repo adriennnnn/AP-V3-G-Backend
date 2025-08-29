@@ -10,8 +10,10 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(new ValidationPipe())
-  async register(@Body() registerUserDto: RegisterUserDto) {
-    return this.authService.register(registerUserDto);
+  async register(@Body() registerUserDto: RegisterUserDto, @Req() req) {
+    // Get referral code from cookie or body
+    const referralCode = req.cookies?.referral_code || registerUserDto['referralCode'];
+    return this.authService.register(registerUserDto, referralCode);
   }
 
   @Post('login')

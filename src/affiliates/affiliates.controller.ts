@@ -14,14 +14,14 @@ export class AffiliatesController {
   constructor(private readonly affiliatesService: AffiliatesService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UsePipes(new ValidationPipe())
   create(@Body() createAffiliateDto: CreateAffiliateDto) {
     return this.affiliatesService.create(createAffiliateDto);
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   findAll(@Query('status') status?: AffiliateStatus) {
     if (status) {
       return this.affiliatesService.findByStatus(status);
@@ -30,13 +30,13 @@ export class AffiliatesController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   findOne(@Param('id') id: string) {
     return this.affiliatesService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   update(@Param('id') id: string, @Body() updateAffiliateDto: UpdateAffiliateDto) {
     return this.affiliatesService.update(id, updateAffiliateDto);
@@ -49,13 +49,13 @@ export class AffiliatesController {
   }
 
   @Patch(':id/assign-manager')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   assignManager(@Param('id') id: string, @Body('managerId') managerId: string) {
     return this.affiliatesService.assignManager(id, managerId);
   }
 
   @Patch(':id/update-earnings')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   updateEarnings(@Param('id') id: string, @Body('amount') amount: number) {
     return this.affiliatesService.updateEarnings(id, amount);
   }

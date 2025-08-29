@@ -23,7 +23,21 @@ Content-Type: application/json
 {
   "email": "user@example.com",
   "password": "password123",
-  "username": "username"
+  "username": "username",
+  "role": "user"
+}
+```
+
+#### Register User with Referral
+```http
+POST /auth/register?ref=REFERRAL_CODE
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "username": "username",
+  "role": "user"
 }
 ```
 
@@ -58,7 +72,7 @@ Authorization: Bearer <token>
 
 ### Users (`/users`)
 
-#### Get All Users (Admin/Manager only)
+#### Get All Users (Admin/Author only)
 ```http
 GET /users
 GET /users?role=admin
@@ -71,7 +85,7 @@ GET /users/profile
 Authorization: Bearer <token>
 ```
 
-#### Get User by ID (Admin/Manager only)
+#### Get User by ID (Admin/Author only)
 ```http
 GET /users/:id
 Authorization: Bearer <token>
@@ -88,6 +102,19 @@ Authorization: Bearer <token>
   "password": "password123",
   "username": "username",
   "role": "user"
+}
+```
+
+#### Register with Referral
+```http
+POST /users/register-with-referral
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "username": "username",
+  "referralCode": "ABC12345"
 }
 ```
 
@@ -129,6 +156,18 @@ Authorization: Bearer <token>
 #### Delete User (Admin only)
 ```http
 DELETE /users/:id
+Authorization: Bearer <token>
+```
+
+#### Get Affiliate Dashboard (Subscriber/Author/Admin only)
+```http
+GET /users/affiliate/dashboard
+Authorization: Bearer <token>
+```
+
+#### Get Referral Link (Subscriber/Author/Admin only)
+```http
+GET /users/referral-link
 Authorization: Bearer <token>
 ```
 
@@ -205,22 +244,110 @@ DELETE /articles/:id
 Authorization: Bearer <token>
 ```
 
-### Affiliates (`/affiliates`)
+### Stripe Subscriptions (`/subscriptions`)
 
-#### Get All Affiliates (Admin/Manager only)
+#### Create Subscription
+```http
+POST /subscriptions/create
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "plan": "basic",
+  "paymentMethodId": "pm_card_visa"
+}
+```
+
+#### Cancel Subscription
+```http
+POST /subscriptions/cancel
+Authorization: Bearer <token>
+```
+
+#### Pause Subscription
+```http
+POST /subscriptions/pause
+Authorization: Bearer <token>
+```
+
+#### Resume Subscription
+```http
+POST /subscriptions/resume
+Authorization: Bearer <token>
+```
+
+#### Get Subscription Status
+```http
+GET /subscriptions/status
+Authorization: Bearer <token>
+```
+
+#### Create Payment Intent
+```http
+POST /subscriptions/payment-intent
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "amount": 999,
+  "currency": "eur"
+}
+```
+
+### Affiliate System (`/affiliate`)
+
+#### Get Affiliate Dashboard
+```http
+GET /affiliate/dashboard
+Authorization: Bearer <token>
+```
+
+#### Get Referral Tree
+```http
+GET /affiliate/referral-tree
+Authorization: Bearer <token>
+```
+
+#### Calculate Commission (Subscriber/Author/Admin only)
+```http
+POST /affiliate/calculate-commission
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "userId": "user-uuid",
+  "amount": 29.99
+}
+```
+
+#### Distribute Commission (Admin only)
+```http
+POST /affiliate/distribute-commission
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "userId": "user-uuid",
+  "amount": 29.99
+}
+```
+
+### Affiliates Management (`/affiliates`)
+
+#### Get All Affiliates (Admin/Author only)
 ```http
 GET /affiliates
 GET /affiliates?status=approved
 Authorization: Bearer <token>
 ```
 
-#### Get Affiliate by ID (Admin/Manager only)
+#### Get Affiliate by ID (Admin/Author only)
 ```http
 GET /affiliates/:id
 Authorization: Bearer <token>
 ```
 
-#### Create Affiliate (Admin/Manager only)
+#### Create Affiliate (Admin/Author only)
 ```http
 POST /affiliates
 Content-Type: application/json
@@ -236,7 +363,7 @@ Authorization: Bearer <token>
 }
 ```
 
-#### Update Affiliate (Admin/Manager only)
+#### Update Affiliate (Admin/Author only)
 ```http
 PATCH /affiliates/:id
 Content-Type: application/json
@@ -248,7 +375,7 @@ Authorization: Bearer <token>
 }
 ```
 
-#### Assign Manager (Admin/Manager only)
+#### Assign Manager (Admin/Author only)
 ```http
 PATCH /affiliates/:id/assign-manager
 Content-Type: application/json
@@ -259,7 +386,7 @@ Authorization: Bearer <token>
 }
 ```
 
-#### Update Earnings (Admin/Manager only)
+#### Update Earnings (Admin/Author only)
 ```http
 PATCH /affiliates/:id/update-earnings
 Content-Type: application/json
@@ -276,9 +403,9 @@ DELETE /affiliates/:id
 Authorization: Bearer <token>
 ```
 
-### Subscriptions (`/subscriptions`)
+### Subscriptions Management (`/subscriptions`)
 
-#### Get All Subscriptions (Admin/Manager only)
+#### Get All Subscriptions (Admin/Author only)
 ```http
 GET /subscriptions
 GET /subscriptions?status=active
@@ -293,13 +420,13 @@ GET /subscriptions/my-subscriptions
 Authorization: Bearer <token>
 ```
 
-#### Get Subscription by ID (Admin/Manager only)
+#### Get Subscription by ID (Admin/Author only)
 ```http
 GET /subscriptions/:id
 Authorization: Bearer <token>
 ```
 
-#### Create Subscription (Admin/Manager only)
+#### Create Subscription (Admin/Author only)
 ```http
 POST /subscriptions
 Content-Type: application/json
@@ -316,7 +443,7 @@ Authorization: Bearer <token>
 }
 ```
 
-#### Update Subscription (Admin/Manager only)
+#### Update Subscription (Admin/Author only)
 ```http
 PATCH /subscriptions/:id
 Content-Type: application/json
@@ -328,19 +455,19 @@ Authorization: Bearer <token>
 }
 ```
 
-#### Cancel Subscription (Admin/Manager only)
+#### Cancel Subscription (Admin/Author only)
 ```http
 PATCH /subscriptions/:id/cancel
 Authorization: Bearer <token>
 ```
 
-#### Renew Subscription (Admin/Manager only)
+#### Renew Subscription (Admin/Author only)
 ```http
 PATCH /subscriptions/:id/renew
 Authorization: Bearer <token>
 ```
 
-#### Check Expired Subscriptions (Admin/Manager only)
+#### Check Expired Subscriptions (Admin/Author only)
 ```http
 GET /subscriptions/check-expired
 Authorization: Bearer <token>
@@ -364,12 +491,38 @@ GET /health
 GET /info
 ```
 
-## User Roles
+## User Roles Hierarchy
 
-- **USER**: Basic user with limited access
-- **AUTHOR**: Can create and manage their own articles
-- **MANAGER**: Can manage affiliates and subscriptions
 - **ADMIN**: Full access to all features
+- **AUTHOR**: Can create and manage articles, manage affiliates and subscriptions
+- **SUBSCRIBER**: Can read all articles, create referral links, view affiliate dashboard
+- **USER**: Basic user with limited access (can only register and take subscriptions)
+
+Each higher role inherits all permissions from lower roles.
+
+## Subscription Plans
+
+### Basic Plan
+- Price: €9.99/month
+- Features: Basic access to articles
+
+### Standard Plan
+- Price: €19.99/month
+- Features: Standard access to articles + affiliate features
+
+### Premium Plan
+- Price: €39.99/month
+- Features: Full access to all content + advanced affiliate features
+
+## Affiliate Commission Structure
+
+### Direct Referrals
+- 30% commission for < 10 direct referrals
+- 40% commission for ≥ 10 direct referrals
+
+### Indirect Referrals (Second Level)
+- 5% commission for < 5 affiliates each
+- 10% commission for ≥ 5 affiliates each
 
 ## Data Models
 
@@ -380,6 +533,12 @@ GET /info
   email: string;
   username: string;
   role: UserRole;
+  referralCode: string;
+  referredBy: string;
+  totalEarnings: number;
+  pendingEarnings: number;
+  directReferrals: number;
+  indirectReferrals: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -453,3 +612,31 @@ Common HTTP status codes:
 - `403`: Forbidden
 - `404`: Not Found
 - `500`: Internal Server Error
+
+## Setup Instructions
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment variables:**
+   ```bash
+   cp env.example .env
+   # Edit .env with your database and Stripe credentials
+   ```
+
+3. **Setup Stripe plans:**
+   ```bash
+   node scripts/setup-stripe.js
+   ```
+
+4. **Run database migrations:**
+   ```bash
+   npm run migration:run
+   ```
+
+5. **Start the application:**
+   ```bash
+   npm run start:dev
+   ```

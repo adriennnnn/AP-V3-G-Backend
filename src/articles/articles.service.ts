@@ -22,8 +22,8 @@ export class ArticlesService {
     const queryBuilder = this.articlesRepository.createQueryBuilder('article')
       .leftJoinAndSelect('article.author', 'author');
 
-    if (user && (user.role === UserRole.ADMIN || user.role === UserRole.AUTHOR || user.role === UserRole.MANAGER)) {
-      // Admins, authors, and managers can see all articles
+    if (user && (user.role === UserRole.ADMIN || user.role === UserRole.AUTHOR || user.role === UserRole.SUBSCRIBER)) {
+      // Admins, authors, and subscribers can see all articles
     } else {
       // Regular users can only see published articles
       queryBuilder.where('article.published = :published', { published: true });
@@ -72,7 +72,7 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
-    if (!article.published && (!user || (user.role !== UserRole.ADMIN && user.role !== UserRole.AUTHOR && user.role !== UserRole.MANAGER))) {
+    if (!article.published && (!user || (user.role !== UserRole.ADMIN && user.role !== UserRole.AUTHOR && user.role !== UserRole.SUBSCRIBER))) {
       throw new UnauthorizedException('You are not authorized to view this article');
     }
     return article;

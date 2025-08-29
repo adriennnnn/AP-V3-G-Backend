@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,6 +8,9 @@ import { AuthModule } from './auth/auth.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AffiliatesModule } from './affiliates/affiliates.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { StripeModule } from './stripe/stripe.module';
+import { AffiliateModule } from './affiliate/affiliate.module';
+import { ReferralMiddleware } from './middleware/referral.middleware';
 
 @Module({
   imports: [
@@ -35,9 +38,17 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     ArticlesModule,
     AffiliatesModule,
     SubscriptionsModule,
+    StripeModule,
+    AffiliateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ReferralMiddleware)
+      .forRoutes('*');
+  }
+}
 

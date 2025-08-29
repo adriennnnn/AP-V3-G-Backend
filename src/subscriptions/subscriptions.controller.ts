@@ -14,14 +14,14 @@ export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UsePipes(new ValidationPipe())
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     return this.subscriptionsService.create(createSubscriptionDto);
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   findAll(
     @Query('status') status?: SubscriptionStatus,
     @Query('type') type?: SubscriptionType,
@@ -40,19 +40,19 @@ export class SubscriptionsController {
   }
 
   @Get('my-subscriptions')
-  @Roles(UserRole.USER, UserRole.AUTHOR, UserRole.MANAGER, UserRole.ADMIN)
+  @Roles(UserRole.USER, UserRole.SUBSCRIBER, UserRole.AUTHOR, UserRole.ADMIN)
   findMySubscriptions(@Req() req) {
     return this.subscriptionsService.findByUser(req.user.id);
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   findOne(@Param('id') id: string) {
     return this.subscriptionsService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   update(@Param('id') id: string, @Body() updateSubscriptionDto: UpdateSubscriptionDto) {
     return this.subscriptionsService.update(id, updateSubscriptionDto);
@@ -65,19 +65,19 @@ export class SubscriptionsController {
   }
 
   @Patch(':id/cancel')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   cancel(@Param('id') id: string) {
     return this.subscriptionsService.cancel(id);
   }
 
   @Patch(':id/renew')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   renew(@Param('id') id: string) {
     return this.subscriptionsService.renew(id);
   }
 
   @Get('check-expired')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.AUTHOR)
   checkExpiredSubscriptions() {
     return this.subscriptionsService.checkExpiredSubscriptions();
   }
